@@ -42,10 +42,40 @@
         }
         .card {
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        .card::after {
+            content: '點擊展開';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 10px;
+            color: #6b7280;
+            opacity: 0.7;
+            pointer-events: none;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* 移除浮動效果 */
+        }
+        .hidden {
+            display: none;
+        }
+        .card-content {
+            transition: all 0.15s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding: 0;
+            margin: 0;
+        }
+        .card-content.show {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 8px;
+            padding: 8px 0;
+        }
+        .card.expanded::after {
+            content: '點擊收合';
         }
         .chart-container {
             position: relative;
@@ -389,7 +419,7 @@
                             ${data.pros.map(arg => `
                                 <div class="card bg-white p-5 rounded-lg shadow-sm border border-emerald-200 cursor-pointer">
                                     <h5 class="font-bold text-emerald-800">${arg.title}</h5>
-                                    <p class="text-zinc-600 text-sm mt-2 hidden">${arg.content}</p>
+                                    <p class="card-content text-zinc-600 text-sm">${arg.content}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -398,7 +428,7 @@
                             ${data.cons.map(arg => `
                                 <div class="card bg-white p-5 rounded-lg shadow-sm border border-rose-200 cursor-pointer">
                                     <h5 class="font-bold text-rose-800">${arg.title}</h5>
-                                    <p class="text-zinc-600 text-sm mt-2 hidden">${arg.content}</p>
+                                    <p class="card-content text-zinc-600 text-sm">${arg.content}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -407,12 +437,37 @@
                 argumentContainer.appendChild(sectionEl);
             });
 
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const content = card.querySelector('p');
-                    content.classList.toggle('hidden');
+            // 在創建完所有卡片後，為每個卡片添加點擊事件
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.card');
+                console.log('找到卡片數量:', cards.length);
+                
+                cards.forEach((card, index) => {
+                    card.addEventListener('click', () => {
+                        console.log('卡片被點擊:', index);
+                        const content = card.querySelector('.card-content');
+                        if (content) {
+                            const isExpanded = content.classList.contains('show');
+                            content.classList.toggle('show');
+                            card.classList.toggle('expanded', !isExpanded);
+                            console.log('內容展開狀態:', !isExpanded);
+                            
+                            // Google Analytics 追蹤
+                            const cardTitle = card.querySelector('h5').textContent;
+                            const cardType = card.closest('.space-y-4').querySelector('h4').textContent.includes('正面') ? 'pro' : 'con';
+                            
+                            gtag('event', 'card_interaction', {
+                                'event_category': 'content_interaction',
+                                'event_label': cardTitle,
+                                'custom_parameter_1': cardType,
+                                'custom_parameter_2': isExpanded ? 'collapse' : 'expand'
+                            });
+                        } else {
+                            console.log('找不到內容元素');
+                        }
+                    });
                 });
-            });
+            }, 100);
 
             const costData = {
                 labels: ['核能(既有邊際)', '風力(全球均化)', '太陽光電(全球均化)', '核能(重啟預估)', '燃煤(台電自發)', '燃氣(台電自發)', '太陽光電(台電購電)'],
@@ -567,25 +622,7 @@
                 });
             });
 
-            // 追蹤卡片點擊事件
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const content = card.querySelector('p');
-                    const isVisible = !content.classList.contains('hidden');
-                    content.classList.toggle('hidden');
-
-                    // 追蹤卡片展開/收合
-                    const cardTitle = card.querySelector('h5').textContent;
-                    const cardType = card.closest('.space-y-4').querySelector('h4').textContent.includes('正面') ? 'pro' : 'con';
-
-                    gtag('event', 'card_interaction', {
-                        'event_category': 'content_interaction',
-                        'event_label': cardTitle,
-                        'custom_parameter_1': cardType,
-                        'custom_parameter_2': isVisible ? 'collapse' : 'expand'
-                    });
-                });
-            });
+            // 追蹤卡片點擊事件 - 移除重複的事件綁定，因為已經在上面綁定了
 
             // 追蹤頁面滾動深度
             let maxScrollDepth = 0;
