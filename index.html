@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核三重啟議題互動分析儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfcfb;
+            color: #3f3f46;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+                margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-[#fdfcfb] text-zinc-700">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-zinc-800">核三重啟議題儀表板</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#hero" class="nav-link pb-1">首頁</a>
+                <a href="#dashboard" class="nav-link pb-1">議題儀表板</a>
+                <a href="#data" class="nav-link pb-1">數據探索</a>
+                <a href="#conclusion" class="nav-link pb-1">結論建議</a>
+                <a href="#citations" class="nav-link pb-1">引用著作</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#hero" class="block nav-link text-center py-2">首頁</a>
+            <a href="#dashboard" class="block nav-link text-center py-2">議題儀表板</a>
+            <a href="#data" class="block nav-link text-center py-2">數據探索</a>
+            <a href="#conclusion" class="block nav-link text-center py-2">結論建議</a>
+            <a href="#citations" class="block nav-link text-center py-2">引用著作</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-6 py-8 md:py-12">
+
+        <section id="hero" class="text-center mb-16 md:mb-24 section-fade-in">
+            <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-4">核三重啟議題互動分析儀表板</h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-zinc-600 mb-8">
+                核三廠已依法停機，但重啟的聲音未曾停歇。這不僅是能源問題，更牽動著安全、經濟、環境與社會公義。本儀表板旨在呈現多元觀點，助您釐清這個重大議題的全貌。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-zinc-200">
+                    <h3 class="text-lg font-bold text-indigo-600 mb-2">預估重啟時間</h3>
+                    <p class="text-4xl font-bold text-zinc-800">3.5 - 10年</p>
+                    <p class="text-zinc-500 mt-1">包含安全評估、設備更新與補強</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-zinc-200">
+                    <h3 class="text-lg font-bold text-amber-600 mb-2">預估重啟成本</h3>
+                    <p class="text-4xl font-bold text-zinc-800">數百億至近四千億</p>
+                    <p class="text-zinc-500 mt-1">新台幣，各方估算差異巨大</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-zinc-200">
+                    <h3 class="text-lg font-bold text-teal-600 mb-2">對全國電力佔比</h3>
+                    <p class="text-4xl font-bold text-zinc-800">~5-6%</p>
+                    <p class="text-zinc-500 mt-1">重啟後預估發電量佔比</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="mb-16 md:mb-24 section-fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-3">議題儀表板：正反觀點透視</h2>
+                <p class="text-lg text-zinc-600 max-w-2xl mx-auto">點擊下方卡片，深入了解各面向的關鍵論點。</p>
+            </div>
+            <div id="argument-container" class="space-y-12"></div>
+        </section>
+
+        <section id="data" class="mb-16 md:mb-24 section-fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-3">數據探索：成本與效益的比較</h2>
+                <p class="text-lg text-zinc-600 max-w-2xl mx-auto">透過互動圖表，比較不同發電方式的成本與碳排放。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-zinc-200">
+                    <h3 class="text-xl font-bold text-center mb-4">發電成本比較 (元/度)</h3>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-sm text-zinc-500 mt-4 text-center">註：核能重啟成本為參考美國案例之預估值，包含前期投資。既有核電邊際成本不含重啟及核廢料處理費用。</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-zinc-200">
+                    <h3 class="text-xl font-bold text-center mb-4">生命週期碳排放比較 (gCO₂eq/kWh)</h3>
+                    <div class="chart-container">
+                        <canvas id="carbonChart"></canvas>
+                    </div>
+                     <p class="text-sm text-zinc-500 mt-4 text-center">註：核能全生命週期碳排估算涵蓋鈾礦開採至核廢料處理，其數值存在爭議。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="bg-white p-8 md:p-12 rounded-xl shadow-lg border border-zinc-200 section-fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-3">結論與戰略性建議</h2>
+                <p class="text-lg text-zinc-600 max-w-3xl mx-auto">綜合評估顯示，核三重啟並非解決台灣能源困境的萬靈丹。以下為報告提出的未來能源政策方向。</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-indigo-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-indigo-800 text-lg mb-2">❶ 優先解決核廢料</h3>
+                    <p class="text-zinc-700">借鑒國際經驗，透過透明溝通與回饋機制建立社會信任，尋求最終處置場址的共識。這是所有核能討論的基礎。</p>
+                </div>
+                <div class="bg-teal-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-teal-800 text-lg mb-2">❷ 加速發展再生能源</h3>
+                    <p class="text-zinc-700">將資源投入風光電等綠能，滿足產業RE100需求，提升國際競爭力，並有效達成減碳目標。</p>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-amber-800 text-lg mb-2">❸ 強化電網韌性</h3>
+                    <p class="text-zinc-700">發展儲能技術，建置快速升降載的燃氣機組，以搭配再生能源的間歇性，確保供電穩定。</p>
+                </div>
+                <div class="bg-rose-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-rose-800 text-lg mb-2">❹ 審慎評估真實成本</h3>
+                    <p class="text-zinc-700">進行全面透明的成本效益分析，納入安全、核廢、風險等所有生命週期成本，確保公共資源有效配置。</p>
+                </div>
+                <div class="bg-sky-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-sky-800 text-lg mb-2">❺ 建立央地協商機制</h3>
+                    <p class="text-zinc-700">在重大決策上，應充分與地方對話，尊重地方自治權，確保決策的程序正義與社會和諧。</p>
+                </div>
+                 <div class="bg-slate-100 p-6 rounded-lg">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2">❻ 總結</h3>
+                    <p class="text-zinc-700">台灣應聚焦於長期可持續、符合國際趨勢的能源路徑，而非將希望寄託於充滿不確定性的老舊核電廠重啟。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 引用著作區塊 -->
+        <section id="citations" class="mt-16 md:mt-24 section-fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-3">引用著作與資料來源</h2>
+                <p class="text-lg text-zinc-600 max-w-2xl mx-auto">本儀表板內容參考多方研究與報告，以下為部分主要來源。</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-zinc-200 max-w-4xl mx-auto">
+                <ul class="list-disc list-inside space-y-4 text-zinc-700 break-words">
+                    <li>綠色公民行動聯盟，《台灣核三廠重啟評估分析報告》，2023。</li>
+                    <li>經濟部能源局，2023年全國電力供需報告。</li>
+                    <li>台灣電力公司，核能發電廠運轉資訊及相關數據。</li>
+                    <li>國際能源總署（IEA），《2023年世界能源展望》報告。</li>
+                    <li>美國能源資訊署（EIA），《2023年電力發電成本估算》報告。</li>
+                    <li>IPCC，《氣候變遷2022：影響、調適與脆弱度》報告。</li>
+                    <li>【核三公投】葉宗洸：核三延役有助抑制電價上漲；曾文生：核電100%安全的成本遠高於效益。 (2025年8月10日檢索)。 <a href="https://csr.cw.com.tw/article/44297" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>砸大錢只為6%電！236名跨領域學者連署7大理由「不同意重啟核三」 - Yahoo奇摩新聞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E7%A0%B8%E5%A4%A7%E9%8C%A2%E5%8F%AA%E7%82%BA6-%E9%9B%BB-236%E5%90%8D%E8%B7%A8%E9%A0%98%E5%9F%9F%E5%AD%B8%E8%80%85%E9%80%A3%E7%BD%B2-7%E5%A4%A7%E7%90%86%E7%94%B1-%E4%B8%8D%E5%90%8C%E6%84%8F%E9%87%8D%E5%95%9F%E6%A0%B8%E4%B8%89-071900668.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三公投前的Ｎ個提問屆期的核電廠該重啟或除役？ - 環境資訊中心。 (2025年8月10日檢索)。 <a href="https://e-info.org.tw/node/241743" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>防地震核能電廠耐震與防震的安全 - 台灣電力公司。 (2025年8月10日檢索)。 <a href="https://www.taipower.com.tw/media/tbpn4jw2/%E9%98%B2%E5%9C%B0%E9%9C%87(%E6%A0%B8%E9%9B%BB%E5%BB%A0%E8%80%90%E9%9C%87%E8%A8%AD%E8%A8%88%E6%8E%A1%E6%9C%80%E9%AB%98%E5%AE%89%E5%85%A8%E6%A8%99%E6%BA%96%E4%B8%A6%E4%BE%9D%E5%9C%B0%E8%B3%AA%E6%96%B0%E4%BA%8B%E8%AD%89%E5%AE%8C%E6%88%90%E8%80%90%E9%9C%87%E6%8F%90%E5%8D%87).pdf?mediaDL=true" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>台電啟動6安檢核三延役見曙光 - Yahoo奇摩新聞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E5%8F%B0%E9%9B%BB%E5%95%9F%E5%8B%956%E5%AE%89%E6%AA%A2-%E6%A0%B8%E4%B8%89%E5%BB%B6%E5%BD%B9%E8%A6%8B%E6%9B%99%E5%85%89-201000523.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>【記者會全記錄】陳文山、李錫堤兩大地質學者談核三廠地震風險 - 環境資訊中心。 (2025年8月10日檢索)。 <a href="https://e-info.org.tw/node/241621" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三重啟公投》地質專家示警活動斷層、地層下陷風險：再怎麼補強也不敵板塊運動。 (2025年8月10日檢索)。 <a href="https://www.reccessary.com/zh-tw/news/gcaa-maanshan-nuclear-power-geology-research" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>重啟核三爭議：一場關乎台灣未來能源的辯證| 上報 - LINE TODAY。 (2025年8月10日檢索)。 <a href="https://today.line.me/tw/v3/article/9m7zyJq" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>自由廣場》核三「黑歷史」多全民無須賭命。 (2025年8月10日檢索)。 <a href="https://talk.ltn.com.tw/article/paper/1719490" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>第三核能發電廠- 維基百科。 (2025年8月10日檢索)。 <a href="https://zh.wikipedia.org/zh-tw/%E7%AC%AC%E4%B8%89%E6%A0%B8%E8%83%BD%E7%99%BC%E9%9B%BB%E5%BB%A0" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三廠耐震能力比台北101更強！學者：海嘯來不會造成任何破壞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E6%A0%B8%E4%B8%89%E5%BB%A0%E8%80%90%E9%9C%87%E8%83%BD%E5%8A%9B%E6%AF%94%E5%8F%B0%E5%8C%97101%E6%9B%B4%E5%BC%B7-%E5%AD%B8%E8%80%85-%E6%B5%B7%E5%98%AF%E4%BE%86%E4%B8%8D%E6%9C%83%E9%80%A0%E6%88%90%E4%BB%BB%E4%BD%95%E7%A0%B4%E5%A3%9E-092900803.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>網憂核三廠遇地震、海嘯葉宗洸：耐震度是台北101兩倍 - Yahoo奇摩新聞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E7%B6%B2%E6%86%82%E6%A0%B8%E4%B8%89%E5%BB%A0%E9%81%87%E5%9C%B0%E9%9C%87-%E6%B5%B7%E5%98%AF-%E8%91%89%E5%AE%97%E6%B4%B8-%E8%80%90%E9%9C%87%E5%BA%A6%E6%98%AF%E5%8F%B0%E5%8C%97101%E5%85%A9%E5%80%8D-085323089.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核電延役的兩大基本問題美核安專家：業者敢面對嗎？。 (2025年8月10日檢索)。 <a href="https://esg.ettoday.net/news/2847366" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>我國核電廠延役推動現況暨發展新型核能成為永續能源之規劃」 專。 (2025年8月10日檢索)。 <a href="https://www.nusc.gov.tw/share/file/law/KM2jHwnAOncMY3spzRHxjg__.pdf?v=2024071124" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>烏克蘭札波羅熱核電廠最新情勢說明(2024年10月) - 核能安全委員會。 (2025年8月10日檢索)。 <a href="https://www.nusc.gov.tw/newsdetail/headline/7253.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>俄烏戰爭兩周年：核災風險攀升、生態環境遭破壞 - 綠色公民行動聯盟。 (2025年8月10日檢索)。 <a href="https://gcaa.org.tw/9905/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三重啟公投投票前，你一定要知道的6 件事。 (2025年8月10日檢索)。 <a href="https://www.cet-taiwan.org/node/4719" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>反核團體指核三應先評估安全風險再公投呼籲投下不同意票。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E5%8F%8D%E6%A0%B8%E5%9C%98%E9%AB%94%E6%8C%87%E6%A0%B8%E4%B8%89%E6%87%89%E5%85%88%E8%A9%95%E4%BC%B0%E5%AE%89%E5%85%A8%E9%A2%A8%E9%9A%AA%E5%86%8D%E5%85%AC%E6%8A%95-%E5%91%BC%E7%B1%B2%E6%8A%95%E4%B8%8B%E4%B8%8D%E5%90%8C%E6%84%8F%E7%A5%A8-100007093.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>楊宏基觀點》台灣戰時能源危機：核三停役加劇脆弱性！封鎖威脅電力崩潰公投與分散化將成關鍵 - Yahoo奇摩新聞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E6%A5%8A%E5%AE%8F%E5%9F%BA%E8%A7%80%E9%BB%9E-%E5%8F%B0%E7%81%A3%E6%88%B0%E6%99%82%E8%83%BD%E6%BA%90%E5%8D%B1%E6%A9%9F-%E6%A0%B8%E4%B8%89%E5%81%9C%E5%BD%B9%E5%8A%A0%E5%8A%87%E8%84%86%E5%BC%B1%E6%80%A7-%E5%B0%81%E9%8E%96%E5%A8%81%E8%84%85%E9%9B%BB%E5%8A%9B%E5%B4%A9%E6%BD%B0-%E5%85%AC%E6%8A%95%E8%88%87%E5%88%86%E6%95%A3%E5%8C%96%E5%B0%87%E6%88%90%E9%97%9C%E9%8D%B5-025956452.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>福島事故撤離範圍達30公里，台灣緊急應變計畫區僅8公里 - 中國工程師學會。 (2025年8月10日檢索)。 <a href="http://www.cie.org.tw/Nuclear/NuclearIssueDetail/11?ceic_id=4" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核電廠核災隱憂—「斷然處置程序」未考量大災對人性嚴酷考驗，如何斷然？ - 監察院。 (2025年8月10日檢索)。 <a href="https://www.cy.gov.tw/News_Content.aspx?n=125&s=22112" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>災難衝擊評估報告：臺灣如果發生福島核災等級事件必須淨空半座臺北城 - iThome。 (2025年8月10日檢索)。 <a href="https://www.ithome.com.tw/news/91794" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>中央部會第二堂-民防通識-全社會防衛韌性之提升.pdf。 (2025年8月10日檢索)。 <a href="https://adma.mnd.gov.tw/files/web/191/file_up/100012/1299/%E4%B8%AD%E5%A4%AE%E9%83%A8%E6%9C%83%E7%AC%AC%E4%BA%8C%E5%A0%82-%E6%B0%91%E9%98%B2%E9%80%9A%E8%AD%98-%E5%85%A8%E7%A4%BE%E6%9C%83%E9%98%B2%E8%A1%9B%E9%9F%8C%E6%80%A7%E4%B9%8B%E6%8F%90%E5%8D%87.pdf" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>113年核安第30號演習總結報告。 (2025年8月10日檢索)。 <a href="https://www.nusc.gov.tw/share/file/emergency/RsmRdHfCWva~T3WHP44MYw__.pdf?v=2024121228" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核電能省錢？便宜的最貴！省視「核電延役」的成本迷思與代價（一） - TCAN 台灣氣候行動網絡。 (2025年8月10日檢索)。 <a href="https://tcan2050.org.tw/2025051602-2/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>重啟核三爭議：一場關乎台灣未來能源的辯證 - 上報Up Media。 (2025年8月10日檢索)。 <a href="https://www.upmedia.mg/news_info.php?Type=2&SerialNo=237096" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>除役即重啟？核三廠公投背後的矛盾與真相。 (2025年8月10日檢索)。 <a href="https://vocus.cc/article/688759c2fd89780001436242" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三公投首場意見發表會激戰！葉宗洸駁有核安問題，曾文生不認台電「缺電、空汙」強調程序正義 - 遠見雜誌。 (2025年8月10日檢索)。 <a href="https://www.gvm.com.tw/article/123329" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>圖解／核三廠停役後？台灣發電結構、核電廠除役4階段| ESG新知 - 倡議家。 (2025年8月10日檢索)。 <a href="https://ubrand.udn.com/ubrand/story/123646/8759641" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三運轉執照剩3天！藍白修法放寬延役卓揆：依法重啟至少3年半 - Yahoo奇摩新聞。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E6%A0%B8%E4%B8%89%E9%81%8B%E8%BD%89%E5%9F%B7%E7%85%A7%E5%89%A93%E5%A4%A9-%E8%97%8D%E7%99%BD%E4%BF%AE%E6%B3%95%E6%94%BE%E5%AF%AC%E5%BB%B6%E5%BD%B9-%E5%8D%93%E6%8F%86-%E4%BE%9D%E6%B3%95%E9%87%8D%E5%95%9F%E8%87%B3%E5%B0%913%E5%B9%B4%E5%8D%8A-010600402.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>非核家園最終章｜核三2號機今晚停機，將轉型恆春最大光電廠 - Reccessary。 (2025年8月10日檢索)。 <a href="https://reccessary.com/zh-tw/news/Taiwan-becomes-non-nuclear-homeland" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三公投辯論｜核能教授葉宗洸：明知核電每度1塊5不用、花大錢買綠電怎能不虧損 - 知新聞。 (2025年8月10日檢索)。 <a href="https://www.knews.com.tw/news/73FB9C5D5CC6B6382891EFF856F917B8" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>【投書】敬覆莊秉潔教授：核廢料成本計算不需要天馬行空的假想 - 獨立評論。 (2025年8月10日檢索)。 <a href="https://opinion.cw.com.tw/blog/profile/52/article/8811" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>經濟部背書？ 核後端基金成台電「小金庫」 立委要求還錢 - 環境資訊中心。 (2025年8月10日檢索)。 <a href="https://e-info.org.tw/node/114076" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核能營運現況與績效-核能發電績效 - 台灣電力公司。 (2025年8月10日檢索)。 <a href="https://www.taipower.com.tw/2289/2363/2380/2382/10536/normalPost" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>持續改善空污，毋須核電作解方 - 地球公民基金會。 (2025年8月10日檢索)。 <a href="https://www.cet-taiwan.org/node/4726" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三2號機5月依法除役台電：已規劃近500萬瓩新機組接棒。 (2025年8月10日檢索)。 <a href="https://www.taipower.com.tw/2289/2323/2332/62264/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>獨家》用核電就能減碳？台大風險中心計算馬政府核四商轉碳排放仍高過非核家園。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E7%8D%A8%E5%AE%B6-%E7%94%A8%E6%A0%B8%E9%9B%BB%E5%B0%B1%E8%83%BD%E6%B8%9B%E7%A2%B3-%E5%8F%B0%E5%A4%A7%E9%A2%A8%E9%9A%AA%E4%B8%AD%E5%BF%83%E8%A8%88%E7%AE%97-%E9%A6%AC%E6%94%BF%E5%BA%9C%E6%A0%B8%E5%9B%9B%E5%95%86%E8%BD%89-%E7%A2%B3%E6%8E%92%E6%94%BE%E4%BB%8D%E9%AB%98%E9%81%8E%E9%9D%9E%E6%A0%B8%E5%AE%B6%E5%9C%92-000001705.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三公投發表／翁曉玲籲留救命電力林子倫憂廢料轉嫁下一代 - 公視新聞網。 (2025年8月10日檢索)。 <a href="https://news.pts.org.tw/article/764866" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>穩定國內電力供應早有規劃核三2號機除役不會影響供電 - 中華民國經濟部。 (2025年8月10日檢索)。 <a href="https://www.moea.gov.tw/MNS/populace/news/News.aspx?kind=1&menu_id=40&news_id=119220" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>2030年全台用電量估成長13％ 經部：AI科技電力需求增8倍。 (2025年8月10日檢索)。 <a href="https://news.pts.org.tw/article/705029" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>經濟部估未來十年用電年均成長2.8%，將應AI需求推動儲能等三項建設 - Reccessary。 (2025年8月10日檢索)。 <a href="https://www.reccessary.com/zh-tw/news/the-ministry-of-economic-affairs-releases-power-supply-and-demand-report" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核管法修正案通過！核電廠可延役20年周春米：鴨霸粗暴 - 聯合報。 (2025年8月10日檢索)。 <a href="https://udn.com/news/story/124488/8737680" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>8/23重啟核三公投你了解多少？通過門檻、正反意見一覽| 生活 - 中央社。 (2025年8月10日檢索)。 <a href="https://www.cna.com.tw/news/ahel/202508055002.aspx" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核電現況 - 綠色公民行動聯盟。 (2025年8月10日檢索)。 <a href="https://gcaa.org.tw/initiative/nonukes/nuclear-power-decommissioning/status-of-nuclear-power/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三廠2號機除役倒數！「除役4階段」如何規劃？核廢料怎解？ - ESG遠見。 (2025年8月10日檢索)。 <a href="https://esg.gvm.com.tw/article/62108" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>9成不知「超過95%能源依賴進口」 民調揭能源認知不足、核能支持上升。 (2025年8月10日檢索)。 <a href="https://esg.ettoday.net/news/3011509" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>台灣能源- 維基百科，自由的百科全書。 (2025年8月10日檢索)。 <a href="https://zh.wikipedia.org/zh-tw/%E5%8F%B0%E7%81%A3%E8%83%BD%E6%BA%90" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>展綠、增氣、減煤、非核 - 中華民國經濟部。 (2025年8月10日檢索)。 <a href="https://www.moea.gov.tw/MNS/populace/Policy/Policy.aspx?menu_id=32800&policy_id=9" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>CHAPTER 11 XA9949554 THERMAL ANNEALING OF AN EMBRITTLED REACTOR PRESSURE VESSEL T. R. Mager, Y. G. Dragunov, C. Leitz - OSTI。 (2025年8月10日檢索)。 <a href="https://www.osti.gov/etdeweb/servlets/purl/322681" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>Recovery of neutron-irradiated VVER-440 RPV base metal and weld exposed to isothermal annealing at 343°C up to 2000 h - Frontiers。 (2025年8月10日檢索)。 <a href="https://www.frontiersin.org/journals/nuclear-engineering/articles/10.3389/fnuen.2024.1446635/full" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核電廠防範地震之因應作為 - 核能安全委員會。 (2025年8月10日檢索)。 <a href="https://www.nusc.gov.tw/share/file/focus/wBmsB9Ete9DBtdmYOeIlhQ__.pdf?v=2024123157" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>美國核電延役情況 - 焦點事件。 (2025年8月10日檢索)。 <a href="https://eventsinfocus.org/issues/7147629" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>意謂既有核電廠若不重啟延役，將無法達到日本2030年核電占比目標 - 能源知識庫。 (2025年8月10日檢索)。 <a href="https://km.twenergy.org.tw/Data/share?vnIp266bGbTWY2jUnAsCeQ==" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>日本首例！運轉50年最老核電廠獲延役10年。 (2025年8月10日檢索)。 <a href="https://tw.news.yahoo.com/%E6%97%A5%E6%9C%AC%E9%A6%96%E4%BE%8B-%E9%81%8B%E8%BD%8950%E5%B9%B4%E7%9A%84%E6%A0%B8%E8%83%BD%E7%99%BC%E9%9B%BB%E5%BB%A0%E7%8D%B2%E5%BB%B6%E5%BD%B910%E5%B9%B4-080445641.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>專家:核電廠位斷層帶遇強震堪慮 - 公視新聞網。 (2025年8月10日檢索)。 <a href="https://news.pts.org.tw/article/173274" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>戰時關鍵基礎設施應變作為：以烏克蘭核電廠事故為例 - 國防部。 (2025年8月10日檢索)。 <a href="https://www.mnd.gov.tw/NewUpload/202305/115-3%E7%BE%85%E6%96%AF%E9%B4%BB--%E6%88%B0%E6%99%82%E9%97%9C%E9%8D%B5%E5%9F%BA%E7%A4%8E%E8%A8%AD%E6%96%BD%E6%87%89%E8%AE%8A%E4%BD%9C%E7%82%BA%EF%BC%9A%E4%BB%A5%E7%83%8F%E5%85%8B%E8%98%AD%E6%A0%B8%E9%9B%BB%E5%BB%A0%E4%BA%8B%E6%95%85%E7%82%BA%E4%BE%8BP83-100_261121.pdf" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>關心能源安全請支持補助台電能源選擇沒有萬靈丹電力韌性需要電源電網並進。 (2025年8月10日檢索)。 <a href="https://www.moea.gov.tw/Mns/populace/news/News.aspx?kind=1&menu_id=40&news_id=118956" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>《核管法》修法三讀為核電續命？政院估核三重啟至少3年半，難解眼前用電荒 - Reccessary。 (2025年8月10日檢索)。 <a href="https://reccessary.com/zh-tw/news/taiwan-legislature-allows-extension-of-nuclear-reactor-operating-licenses" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>立法院60：51三讀通過《核管法》修正案葛如鈞：非強推延役而是多一項選擇權 - 警政時報。 (2025年8月10日檢索)。 <a href="https://www.tcpttw.com/political/2025/05/13/167178/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>歷年全系統與核能發電成本比較- 台灣電力股份有限公司。 (2025年8月10日檢索)。 <a href="https://www.taipower.com.tw/chart/b07_%E7%99%BC%E9%9B%BB%E8%B3%87%E8%A8%8A_%E6%A0%B8%E8%83%BD%E7%87%9F%E9%81%8B%E7%8F%BE%E6%B3%81%E8%88%87%E7%B8%BE%E6%95%88_%E6%AD%B7%E5%B9%B4%E5%85%A8%E7%B3%BB%E7%B5%B1%E8%88%87%E6%A0%B8%E8%83%BD%E7%99%BC%E9%9B%BB%E6%88%90%E6%9C%AC%E6%AF%94%E8%BC%83_.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>高階核廢料沒有最終解決方案之前，台灣是否不應該新設核電廠? - 中國工程師學會。 (2025年8月10日檢索)。 <a href="http://www.cie.org.tw/Nuclear/NuclearIssueDetail/6?ceic_id=4" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>第三章 核電經濟與產業。 (2025年8月10日檢索)。 <a href="https://www.taiwanwatch.org.tw/issue/nuclear/NUpaperf.htm" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>淨零時代下我國能源轉型策略。 (2025年8月10日檢索)。 <a href="https://ws.ndc.gov.tw/Download.ashx?u=LzAwMS9hZG1pbmlzdHJhdG9yLzEwL3JlbGZpbGUvMC8xNTI0NC8zMzJiMWJkMC1iMTg3LTQzNzktYjNmZi04YzAxMmY2MzI0N2QucGRm&n=MjAyM%2Be2k%2Ba%2Fn%2BirluihoV%2FmmKXlraPomZ9fMy0xLuWwiOmhjOWgseWwjl%2Fmt6jpm7bmmYLku6PkuIvmiJHlnIvog73mupDovYnlnovnrZbnlaUucGRm&icon=.pdf" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>再生能源發電效益 - 台灣電力公司。 (2025年8月10日檢索)。 <a href="https://www.taipower.com.tw/2289/2363/2380/2383/10554/normalPost" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>減碳有成！台灣電力排碳係數創18年以來新低，每度電排碳0.494公斤。 (2025年8月10日檢索)。 <a href="https://www.businesstoday.com.tw/article/category/183027/post/202404260036/" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>台灣將成立碳權交易所加速減碳進程 - HKTDC Research。 (2025年8月10日檢索)。 <a href="https://research.hktdc.com/tc/article/MTM5Mjc5MjM3OQ" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>台廠出口歐洲產品碳稅(CBAM),可以外購碳權抵減?。 (2025年8月10日檢索)。 <a href="https://www.no7ai.com/zh/news/%E5%8F%B0%E5%BB%A0%E5%87%BA%E5%8F%A3%E6%AD%90%E6%B4%B2%E7%94%A2%E5%93%81%E7%A2%B3%E7%A8%85-cbam-%E5%8F%AF%E4%BB%A5%E5%A4%96%E8%B3%BC%E7%A2%B3%E6%AC%8A%E6%8A%B5%E6%B8%9B" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>什麼是CBAM？歐盟「碳關稅」將造成哪些影響？對台灣企業的衝擊？ - 奇摩股市。 (2025年8月10日檢索)。 <a href="https://tw.stock.yahoo.com/news/cbam-%E7%A2%B3%E9%82%8A%E5%A2%83%E8%AA%BF%E6%95%B4%E6%A9%9F%E5%88%B6-%E7%A2%B3%E9%97%9C%E7%A8%85-%E6%AD%90%E7%9B%9F-%E9%AB%98%E7%A2%B3%E6%8E%92%E7%94%A2%E6%A5%AD-064353936.html" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>碳權轉移限制有何影響？借鏡歐盟與東協，看「缺乏流動性」如何僵化台灣碳市場 - Reccessary。 (2025年8月10日檢索)。 <a href="https://www.reccessary.com/zh-tw/research/taiwan-carbon-market-weak-liquidity" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                    <li>核三重啟公投懶人包》8/23投票前必讀！核安風險、經濟成本、正反立場一次掌握。 (2025年8月10日檢索)。 <a href="https://esg.businesstoday.com.tw/article/category/180687/post/202508040025/%E6%A0%B8%E4%B8%89%E9%87%8D%E5%95%9F%E5%85%AC%E6%8A%95%E6%87%B6%E4%BA%BA%E5%8C%85%E3%80%8B8%2F23%E6%8A%95%E7%A5%A8%E5%89%8D%E5%BF%85%E8%AE%80%EF%BC%81%E6%A0%B8%E5%AE%89%E9%A2%A8%E9%9A%AA%E3%80%81%E7%B6%93%E6%BF%9F%E6%88%90%E6%9C%AC%E3%80%81%E6%AD%A3%E5%8F%8D%E7%AB%8B%E5%A0%B4%E4%B8%80%E6%AC%A1%E6%8E%8C%E6%8F%A1" target="_blank" class="text-indigo-600 hover:underline">連結</a></li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-zinc-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>本儀表板內容基於「台灣核三廠重啟評估分析」報告製作，旨在提供資訊與促進公共討論。</p>
+            <p class="text-sm text-zinc-400 mt-2">報告使用 Gemini Deep Research 彙整資訊，如有錯誤歡迎勘誤</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const argumentsData = {
+                "安全 Safety": {
+                    icon: '🛡️',
+                    color: 'blue',
+                    pros: [
+                        { title: "可行的延役程序", content: "國際上已有核電廠運轉超過40年的案例，顯示在嚴格的安全評估與設備更新後，延役具有技術可行性。" },
+                        { title: "強化後的耐震能力", content: "經過專業的耐震評估（如SSHAC Level 3），核三廠的耐震能力已達到或高於現行法規標準。其耐震設計採用最高安全標準，耐震能力比台北 101 更強，可承受海嘯衝擊而不會造成任何破壞。" },
+                        { title: "極低的外部事故率", content: "根據多項國際能源研究，若將空氣污染導致的健康問題等外部成本計入，核能發電的單位死亡率遠低於所有化石燃料，是統計上最安全的發電方式之一。" }
+                    ],
+                    cons: [
+                        { title: "設備老化與不可替換性", content: "已運轉近40年，處於高風險的『疲勞期』。部分關鍵組件如反應爐壓力容器無法更換，存在輻射脆化風險。" },
+                        { title: "鄰近活動斷層的風險", content: "核三廠鄰近恆春斷層，此地質風險為長期且無法完全消除的隱憂，可能超出設計基準。廠址附近存在地層下陷風險，即使補強也無法完全抵禦嚴重的板塊運動。" },
+                        { title: "過往不良安全紀錄", content: "曾發生多起運轉異常事件，特別是2001年的重大事故，顯示其系統和管理曾存在潛在風險。" },
+                        { title: "安全管制與除役規範複雜", content: "重啟與延役涉及複雜的法規、技術評估與社會溝通，其時程與成本均充滿不確定性。" }
+                    ]
+                },
+                "風險 Risk": {
+                    icon: '⚠️',
+                    color: 'yellow',
+                    pros: [
+                        { title: "成熟的運轉管理經驗", content: "核三廠累積數十年的運轉經驗與專業人力，有助於維持穩定的運轉管理。" },
+                        { title: "多重安全防護機制", content: "核電廠具有多重實體圍阻體與備援系統，能有效降低外部事件（如天災、人為攻擊）導致的爐心損壞風險。" },
+                        { title: "戰時嚇阻作用", content: "攻擊核電廠可能造成全球性核災，形成一種嚇阻，使之不易成為直接軍事目標。" },
+                        { title: "符合國際延役趨勢", content: "許多國家（如美國、日本）已開始將核電廠延役視為能源政策的一部分。在法律上已有基礎，立法院已通過《核子反應器設施管制法》修正案，為核電廠延役開啟可能性。" },
+                        { title: "地緣政治下的能源韌性", content: "面對地緣政治風險，核三延役可加強電力韌性，保障能源安全。" },
+                        { title: "穩定的燃料供應鏈", content: "相較於價格波動劇烈且易受國際情勢影響的化石燃料，核燃料鈾礦的供應鏈相對穩定，且一次裝填可運轉18-24個月，能有效抵禦國際能源市場的短期供應中斷與價格衝擊。" }
+                    ],
+                    cons: [
+                        { title: "核廢料最終處置難題", content: "台灣至今未能解決高階核廢料的最終處置問題，重啟將持續製造對未來世代的環境與道德債務。" },
+                        { title: "極端氣候帶來的威脅", content: "全球氣候變遷導致極端天氣事件頻繁，可能影響核電廠冷卻水的供應或設備運作，增加非預期的停機風險。" },
+                        { title: "戰時成為潛在攻擊目標", content: "烏俄戰爭期間，烏克蘭札波羅熱核電廠曾遭受攻擊，顯示核電廠在戰時仍可能成為軍事目標。國際原子能總署（IAEA）證實，2024年4月7日有一架無人機直接命中6號機組的反應爐圍阻體，儘管未造成核安危機，但凸顯了核電廠在戰時的脆弱性。" },
+                        { title: "應變計畫不確定性", content: "面對複合式災害（如天災與人為攻擊同時發生）或核子事故，現有應變計畫的執行效率與完善性存疑。監察院報告指出，國內的「斷然處置程序」並未考量人性考驗與天災的複雜性，有其潛在風險。" },
+                        { title: "戰時額外維護負擔", content: "為防止戰損導致核災，戰時可能需要主動緊急停機，並需耗費大量電力與資源來維持冷卻系統與安全設施，增加額外負擔。" }
+                    ]
+                },
+                "成本 Cost": {
+                    icon: '💰',
+                    color: 'green',
+                    pros: [
+                        { title: "低廉的燃料成本", content: "核能發電的燃料成本相對穩定且低廉，有助於抑制發電成本，進而穩定物價與產業競爭力。核三延役可提供低廉電力，每度電約 $1.5。" },
+                        { title: "減少購煤氣的支出", content: "重啟核三可減少對進口燃煤及天然氣的依賴，降低地緣政治風險對能源價格的衝擊。" },
+                        { title: "既有設施再利用", content: "重啟可利用現有廠房、變電設施與人員，避免全新電廠的土地取得、環境評估與巨額興建成本。" },
+                        { title: "長期運營成本的可預測性", content: "雖然重啟初期投資高昂，但後續數十年的燃料與運維成本相對穩定且可預測，不易受國際燃料市場價格劇烈波動影響，有助於國家長期能源成本的穩定與規劃。" }
+                    ],
+                    cons: [
+                        { title: "高昂且難以預估的重啟成本", content: "重啟需要投入巨額資金進行設備更新、安全補強及燃料採購，且確切成本難以事前精準掌握，可能轉嫁給全民。環團估計上看數千億元，美國案例更高達3900億新台幣。" },
+                        { title: "全生命週期成本被低估", content: "若將核電廠的除役、核廢料長期管理、事故風險等成本全數納入，其每度電的真實成本將遠高於單純的運轉成本。核廢料的最終處置費用與除役成本皆難以估算，使得核電並非真正的『便宜』。" },
+                        { title: "延誤再生能源投資", content: "將國家資源投入舊核電廠的重啟，可能排擠更具未來性的再生能源及儲能系統的投資，影響能源轉型進度。" },
+                        { title: "經濟效益低", content: "若因核廢料處置等社會爭議，重啟後僅能運轉數年，則前期投入的龐大成本難以回收，經濟效益極低。核三廠僅占全國總發電量約 6%，投資巨資延役的效益有限。" },
+                        { title: "重啟時間不確定性", content: "重啟流程涉及繁雜的法定程序、技術審查與設備採購，實際完成時間難以掌握，可能錯過最佳的供電時機。重啟也至少需要 3.5 年的時間，難以應對眼前的電力問題。" }
+                    ]
+                },
+                "效益 Benefit": {
+                    icon: '💡',
+                    color: 'purple',
+                    pros: [
+                        { title: "穩定供電的基載來源", content: "核電廠能提供不受天候影響的穩定基載電力，有助於填補能源缺口，維持電網穩定，特別是夏季尖峰用電時期。是確保供電韌性的重要選項。" },
+                        { title: "有效的減碳工具", content: "核電廠運轉時幾乎不排放溫室氣體，能在短期內快速降低發電部門的碳排放，有助於達成國家減碳目標。是達成淨零碳排目標的有效手段。" },
+                        { title: "抑制電價上漲", content: "核電可提供低廉電力（每度電約 $1.5），有助於抑制電價上漲，同時減少購置昂貴綠電的成本。在電力供應緊張時，核電能作為「救命電力」，保障能源安全。" },
+                        { title: "支撐高科技產業發展", content: "半導體等高科技產業需要極度穩定、高品質且不間斷的電力供應。核能作為可靠的基載電力，能為這些攸關國家經濟命脈的關鍵產業提供堅實的電力後盾。" }
+                    ],
+                    cons: [
+                        { title: "無法解決RE100綠電需求", content: "核電不被國際RE100等倡議定義為『再生能源』，無法滿足台灣高科技產業對綠電的需求，影響企業的國際競爭力。" },
+                        { title: "佔比有限且效益遞減", content: "核三廠重啟後預計佔全國電力約5-6%，對整體能源結構的影響有限。且未來將面臨除役，其長期效益遞減。" },
+                        { title: "無法解決CBAM問題", content: "歐盟「碳邊境調整機制」(CBAM)主要規範進口產品的碳排放，但並未將核能視為『低碳』，因此重啟核電無法有效協助出口產業符合CBAM要求。" },
+                        { title: "發電缺口有替代方案", content: "經濟部表示，核三除役後的電力缺口已有足夠的新機組規劃接棒，不會影響供電穩定。AI科技的電力需求雖然增長，但政府已規劃透過儲能等方式因應。" },
+                        { title: "非核也能達成減碳目標", content: "台灣電力排碳係數已創下新低，持續改善空污，並非只有核電一途。" }
+                    ]
+                },
+                "公平正義 Fairness & Justice": {
+                    icon: '⚖️',
+                    color: 'red',
+                    pros: [
+                        { title: "回應多數民意", content: "若透過全國性的公民投票或民調顯示重啟是多數民意所向，則決策應反映民主精神。" },
+                        { title: "地方基層支持", content: "核三廠所在的恆春鎮，有部分基層民意因經濟考量與信任政府把關而贊成延役。" }
+                    ],
+                    cons: [
+                        { title: "風險與利益的不對稱", content: "核電廠的風險（如核災、核廢料）由所在地居民承擔，但發電利益卻由全國共享，構成顯著的區域不平等。" },
+                        { title: "決策的世代不正義", content: "重啟核電將把核廢料的處置責任與成本轉嫁給後代子孫，當代人享受利益，未來世代卻需承擔風險。核廢料的最終處置方案至今仍未有定論，將問題轉嫁給下一代不負責任。" },
+                        { title: "地方政府堅決反對", content: "屏東縣政府堅決反對，認為全國公投是『霸凌地方』，風險由地方承擔，決策卻由全國決定。" },
+                        { title: "民眾對議題認知不足", content: "根據民調，有近 9 成的民眾不清楚台灣的能源依賴度，顯示能源議題的資訊仍有落差。" }
+                    ]
+                }
+            };
+
+            const argumentContainer = document.getElementById('argument-container');
+            Object.entries(argumentsData).forEach(([title, data]) => {
+                const sectionEl = document.createElement('div');
+                sectionEl.innerHTML = `
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl md:text-3xl font-bold text-zinc-800 inline-flex items-center">
+                            <span class="text-3xl mr-3">${data.icon}</span>
+                            ${title}
+                        </h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div class="space-y-4">
+                            <h4 class="text-xl font-semibold text-center text-emerald-700">正面論點 (Pro)</h4>
+                            ${data.pros.map(arg => `
+                                <div class="card bg-white p-5 rounded-lg shadow-sm border border-emerald-200 cursor-pointer">
+                                    <h5 class="font-bold text-emerald-800">${arg.title}</h5>
+                                    <p class="text-zinc-600 text-sm mt-2 hidden">${arg.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="space-y-4">
+                            <h4 class="text-xl font-semibold text-center text-rose-700">反面論點 (Con)</h4>
+                            ${data.cons.map(arg => `
+                                <div class="card bg-white p-5 rounded-lg shadow-sm border border-rose-200 cursor-pointer">
+                                    <h5 class="font-bold text-rose-800">${arg.title}</h5>
+                                    <p class="text-zinc-600 text-sm mt-2 hidden">${arg.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                argumentContainer.appendChild(sectionEl);
+            });
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const content = card.querySelector('p');
+                    content.classList.toggle('hidden');
+                });
+            });
+
+            const costData = {
+                labels: ['核能(既有邊際)', '風力(全球均化)', '太陽光電(全球均化)', '核能(重啟預估)', '燃煤(台電自發)', '燃氣(台電自發)', '太陽光電(台電購電)'],
+                datasets: [{
+                    label: '每度電成本 (新台幣)',
+                    data: [1.12, 1.59, 1.95, 3.5, 3.43, 3.44, 4.88],
+                    backgroundColor: [
+                        'rgba(167, 139, 250, 0.6)',
+                        'rgba(52, 211, 153, 0.6)',
+                        'rgba(251, 191, 36, 0.6)',
+                        'rgba(239, 68, 68, 0.6)',
+                        'rgba(107, 114, 128, 0.6)',
+                        'rgba(249, 115, 22, 0.6)',
+                        'rgba(251, 146, 60, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(167, 139, 250, 1)',
+                        'rgba(52, 211, 153, 1)',
+                        'rgba(251, 191, 36, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(107, 114, 128, 1)',
+                        'rgba(249, 115, 22, 1)',
+                        'rgba(251, 146, 60, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const costChartCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costChartCtx, {
+                type: 'bar',
+                data: costData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '新台幣 (元)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw.toFixed(2)} 元`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const carbonData = {
+                labels: ['風力', '核能', '太陽能', '天然氣', '燃煤'],
+                datasets: [{
+                    label: '生命週期碳排放',
+                    data: [11, 12, 45, 490, 820],
+                     backgroundColor: [
+                        'rgba(52, 211, 153, 0.6)',
+                        'rgba(167, 139, 250, 0.6)',
+                        'rgba(251, 191, 36, 0.6)',
+                        'rgba(249, 115, 22, 0.6)',
+                        'rgba(107, 114, 128, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(52, 211, 153, 1)',
+                        'rgba(167, 139, 250, 1)',
+                        'rgba(251, 191, 36, 1)',
+                        'rgba(249, 115, 22, 1)',
+                        'rgba(107, 114, 128, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const carbonChartCtx = document.getElementById('carbonChart').getContext('2d');
+            new Chart(carbonChartCtx, {
+                type: 'bar',
+                data: carbonData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'gCO₂eq/kWh'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw} gCO₂eq/kWh`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const sections = document.querySelectorAll('.section-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
