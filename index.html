@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>核三重啟議題互動分析儀表板</title>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-F3M0J8P91L', {
+            page_title: '核三重啟議題互動分析儀表板',
+            page_location: window.location.href,
+            custom_map: {
+                'custom_parameter_1': 'page_section',
+                'custom_parameter_2': 'user_interaction'
+            }
+        });
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -508,7 +525,7 @@
                     }
                 }
             });
-            
+
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenuButton.addEventListener('click', () => {
@@ -526,16 +543,111 @@
             sections.forEach(section => {
                 observer.observe(section);
             });
-            
+
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    const targetSection = this.getAttribute('href');
+                    document.querySelector(targetSection).scrollIntoView({
                         behavior: 'smooth'
                     });
+
+                    // 追蹤導航點擊
+                    gtag('event', 'navigation_click', {
+                        'event_category': 'navigation',
+                        'event_label': targetSection,
+                        'custom_parameter_1': targetSection.replace('#', ''),
+                        'custom_parameter_2': 'nav_link'
+                    });
+
                     if (mobileMenu.classList.contains('hidden') === false) {
                         mobileMenu.classList.add('hidden');
                     }
+                });
+            });
+
+            // 追蹤卡片點擊事件
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const content = card.querySelector('p');
+                    const isVisible = !content.classList.contains('hidden');
+                    content.classList.toggle('hidden');
+
+                    // 追蹤卡片展開/收合
+                    const cardTitle = card.querySelector('h5').textContent;
+                    const cardType = card.closest('.space-y-4').querySelector('h4').textContent.includes('正面') ? 'pro' : 'con';
+
+                    gtag('event', 'card_interaction', {
+                        'event_category': 'content_interaction',
+                        'event_label': cardTitle,
+                        'custom_parameter_1': cardType,
+                        'custom_parameter_2': isVisible ? 'collapse' : 'expand'
+                    });
+                });
+            });
+
+            // 追蹤頁面滾動深度
+            let maxScrollDepth = 0;
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+
+                if (scrollPercent > maxScrollDepth && scrollPercent % 25 === 0) {
+                    maxScrollDepth = scrollPercent;
+                    gtag('event', 'scroll_depth', {
+                        'event_category': 'engagement',
+                        'event_label': `${scrollPercent}%`,
+                        'custom_parameter_1': 'scroll_progress',
+                        'custom_parameter_2': scrollPercent
+                    });
+                }
+            });
+
+            // 追蹤圖表互動
+            const costChart = document.getElementById('costChart');
+            const carbonChart = document.getElementById('carbonChart');
+
+            if (costChart) {
+                costChart.addEventListener('click', (e) => {
+                    gtag('event', 'chart_interaction', {
+                        'event_category': 'data_visualization',
+                        'event_label': 'cost_chart',
+                        'custom_parameter_1': 'cost_comparison',
+                        'custom_parameter_2': 'chart_click'
+                    });
+                });
+            }
+
+            if (carbonChart) {
+                carbonChart.addEventListener('click', (e) => {
+                    gtag('event', 'chart_interaction', {
+                        'event_category': 'data_visualization',
+                        'event_label': 'carbon_chart',
+                        'custom_parameter_1': 'carbon_comparison',
+                        'custom_parameter_2': 'chart_click'
+                    });
+                });
+            }
+
+            // 追蹤頁面載入完成
+            window.addEventListener('load', () => {
+                gtag('event', 'page_load_complete', {
+                    'event_category': 'page_performance',
+                    'event_label': 'dashboard_loaded',
+                    'custom_parameter_1': 'full_page_load',
+                    'custom_parameter_2': 'success'
+                });
+            });
+
+            // 追蹤移動端選單使用
+            mobileMenuButton.addEventListener('click', () => {
+                const isMenuOpen = !mobileMenu.classList.contains('hidden');
+                gtag('event', 'mobile_menu_toggle', {
+                    'event_category': 'mobile_interaction',
+                    'event_label': isMenuOpen ? 'close_menu' : 'open_menu',
+                    'custom_parameter_1': 'mobile_navigation',
+                    'custom_parameter_2': isMenuOpen ? 'close' : 'open'
                 });
             });
         });
