@@ -310,7 +310,7 @@
 
     <footer class="bg-zinc-800 text-white mt-16">
         <div class="container mx-auto px-6 py-8 text-center">
-            <p>本儀表板內容基於「台灣核三廠重啟評估分析」報告製作，旨在提供資訊與促進公共討論。</p>
+            <p>本儀表板內容基於「<a href="https://drive.google.com/file/d/1gMwzisPad-YU_DVLlY_6atfdWjbJq_Ed/view?usp=sharing" target="_blank" class="text-blue-400 hover:text-blue-300 underline" id="report-link">台灣核三廠重啟評估分析</a>」報告製作，旨在提供資訊與促進公共討論。</p>
             <p class="text-sm text-zinc-400 mt-2">報告使用 Gemini Deep Research 彙整資訊，如有錯誤歡迎勘誤</p>
             <p class="text-xs text-zinc-500 mt-2">版本號：v1.0.1 | 更新日期：2025年8月10日</p>
         </div>
@@ -688,6 +688,19 @@
                     'custom_parameter_2': isMenuOpen ? 'close' : 'open'
                 });
             });
+
+            // 追蹤報告連結點擊
+            const reportLink = document.getElementById('report-link');
+            if (reportLink) {
+                reportLink.addEventListener('click', () => {
+                    gtag('event', 'report_link_click', {
+                        'event_category': 'external_link',
+                        'event_label': 'nuclear_reactivation_report',
+                        'custom_parameter_1': 'google_drive_document',
+                        'custom_parameter_2': 'footer_link'
+                    });
+                });
+            }
         });
     </script>
 </body>
