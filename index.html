@@ -701,6 +701,28 @@
                     });
                 });
             }
+
+            // 追蹤引用著作連結點擊
+            const citationLinks = document.querySelectorAll('#citations a[href^="http"]');
+            citationLinks.forEach((link, index) => {
+                // 為每個連結添加唯一ID
+                link.id = `citation-link-${index + 1}`;
+                
+                // 添加點擊追蹤
+                link.addEventListener('click', () => {
+                    const linkText = link.textContent.trim();
+                    const linkUrl = link.href;
+                    const linkDomain = new URL(linkUrl).hostname;
+                    
+                    gtag('event', 'citation_link_click', {
+                        'event_category': 'citation_reference',
+                        'event_label': linkDomain,
+                        'custom_parameter_1': linkText,
+                        'custom_parameter_2': linkUrl,
+                        'custom_parameter_3': `citation_${index + 1}`
+                    });
+                });
+            });
         });
     </script>
 </body>
